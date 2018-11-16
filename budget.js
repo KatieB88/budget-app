@@ -4,7 +4,29 @@
 //and this is how modul patterns work
 var budgetController = (function(){
 
+	var Expense = function(id, description, value){
+		this.id = id;
+		this.description = description;
+		this.value = value;
+	};
+
+	var Income = function(id, description, value){
+		this.id = id;
+		this.description = description;
+		this.value = value;
+	};
 	
+	var data = {
+		allItems:{
+			exp: [],
+			inc: []
+		},	
+		totals{
+			exp: 0,
+			inc: 0
+		}
+	};
+
 })();
 
 
@@ -37,9 +59,8 @@ var UIController = (function(){
 		//we don't have to have all out DOMstring contents written in here, we can just make sure the 
 		//object is returned so that it can be accessed by other modules
 		getDOMstrings: function(){
-			return{
-				DOMstrings;
-			}
+			return DOMstrings;
+			
 		}
 	};
 
@@ -60,7 +81,24 @@ var UIController = (function(){
 //have to alter it in one place!
 var controller = (function(budgetCtrl, UICtrl){
 
-	var DOM = UICtrl.getDOMstrings;
+	//to give it a bit more structure, we're putting all our dom manipulation stuff in this function
+	//but now we have to evoke this to allow the DOM manipulation to work- we use init for this
+	var setupEventListeners = function(){
+		var DOM = UICtrl.getDOMstrings();
+
+		//don't have to write an anonymous function if oyu're just planning on running one function on the event listener!
+		//this is the case here, so we've just put the function name in its place- careful to remmeber no brackets so that
+		//it isn't immediately executed when code is run
+		document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
+
+		document.addEventListener('keypress', function(event){
+		if (event.charCode === 13 || event.which === 13){
+			ctrlAddItem();
+		}
+	});
+	};
+
+	
 	
 	var ctrlAddItem = function(){
 		//get field input data- assigning UICtrl here makes input = the returned object, then within that
@@ -76,17 +114,22 @@ var controller = (function(budgetCtrl, UICtrl){
 		//display the budget on the UI
 	}
 
-	//don't have to write an anonymous function if oyu're just planning on running one function on the event listener!
-	//this is the case here, so we've just put the function name in its place- careful to remmeber no brackets so that
-	//it isn't immediately executed when code is run
-	document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
-
-
-
-	document.addEventListener('keypress', function(event){
-		if (event.charCode === 13 || event.which === 13){
-			ctrlAddItem();
+	//We need init to be public, so to do that it needs to be returned in an object
+	return{
+		init: function(){
+			console.log("hi");
+			setupEventListeners();
 		}
-	});
+	};
 
 })(budgetController, UIController);
+
+
+//our event listeners will only be setup once we call the init function, so that needs to be done outside out moudles
+controller.init();
+
+
+
+
+
+
